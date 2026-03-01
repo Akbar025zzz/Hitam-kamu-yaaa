@@ -1,2 +1,0 @@
-# Hitam-kamu-yaaa
-Yayaa
