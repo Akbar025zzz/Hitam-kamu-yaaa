@@ -3,9 +3,9 @@
   👑 KING AKBARION - ULTIMATE BARISTA SCRIPT 👑
 ================================================================================
     [+] Developer   : Akbarion
-    [+] Version     : DDS FREE EDITION (v4.6 - FULL SIZE & FIX SERVE BUG)
+    [+] Version     : DDS FREE EDITION (v4.8 - FULL SIZE + ANTI-LAG)
     [+] UI Theme    : Sodium Menu / MySuperHub
-    [+] Features    : Safe Webhook, Perfect Pathing, Auto-Repair, Anti-Fail Serve
+    [+] Features    : Panic Alert, FPS Boost, Black Screen, Perfect Pathing
 ================================================================================
 ]]--
 
@@ -24,7 +24,8 @@ local Services = {
     Workspace    = game:GetService("Workspace"),
     VIM          = game:GetService("VirtualInputManager"),
     VirtualUser  = game:GetService("VirtualUser"),
-    HttpService  = game:GetService("HttpService")
+    HttpService  = game:GetService("HttpService"),
+    GuiService   = game:GetService("GuiService")
 }
 
 local LocalPlayer = Services.Players.LocalPlayer
@@ -72,221 +73,8 @@ LocalPlayer.Idled:Connect(function()
     end
 end)
 
-local GAME_GROUP_ID = 11378976
-local MIN_STAFF_RANK = 200
-
-local function CheckForAdmin(player)
-    if not State.AntiAdmin then return end
-    if player == LocalPlayer then return end
-    pcall(function()
-        local playerRank = player:GetRankInGroup(GAME_GROUP_ID)
-        if playerRank >= MIN_STAFF_RANK then
-            LocalPlayer:Kick("🚨 KABUR BRAY! Admin terdeteksi masuk server.")
-        end
-    end)
-end
-
-for _, player in ipairs(Services.Players:GetPlayers()) do CheckForAdmin(player) end
-Services.Players.PlayerAdded:Connect(CheckForAdmin)
-
 -- ============================================================================
--- // 3. SPLASH SCREEN (KING AKBARION - DEFAULT THEME)
--- ============================================================================
-do
-    local splashGui = Instance.new("ScreenGui")
-    splashGui.Name           = "BaristaSplash"
-    splashGui.ResetOnSpawn   = false
-    splashGui.IgnoreGuiInset = true
-    splashGui.DisplayOrder   = 999
-    splashGui.Parent         = LocalPlayer:WaitForChild("PlayerGui")
-
-    local bg = Instance.new("Frame", splashGui)
-    bg.Size             = UDim2.fromScale(1, 1)
-    bg.BackgroundColor3 = Color3.fromHex("#0a0a0a")
-    bg.BorderSizePixel  = 0
-    bg.ZIndex           = 1
-
-    local uiGrad = Instance.new("UIGradient", bg)
-    uiGrad.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Color3.fromHex("#0a0a0a")),
-        ColorSequenceKeypoint.new(1, Color3.fromHex("#1e1e1e")),
-    })
-    uiGrad.Rotation = 135
-
-    local container = Instance.new("Frame", bg)
-    container.Size               = UDim2.fromOffset(500, 300)
-    container.Position           = UDim2.fromScale(0.5, 0.5)
-    container.AnchorPoint        = Vector2.new(0.5, 0.5)
-    container.BackgroundTransparency = 1
-    container.ZIndex             = 2
-
-    local function createLabel(text, yOff, size)
-        local lbl = Instance.new("TextLabel", container)
-        lbl.Size                = UDim2.fromOffset(500, 70)
-        lbl.Position            = UDim2.fromOffset(0, yOff)
-        lbl.BackgroundTransparency = 1
-        lbl.Text                = text
-        lbl.TextSize            = size
-        lbl.Font                = Enum.Font.GothamBold
-        lbl.TextColor3          = Color3.fromHex("#ffffff")
-        lbl.TextTransparency    = 1
-        lbl.ZIndex              = 3
-        return lbl
-    end
-
-    local iconImg = Instance.new("ImageLabel", container)
-    iconImg.Size = UDim2.fromOffset(120, 120) 
-    iconImg.Position = UDim2.fromOffset(190, -40) 
-    iconImg.BackgroundTransparency = 1
-    iconImg.Image = "rbxassetid://91115084979317" 
-    iconImg.ImageTransparency = 1
-    iconImg.ZIndex = 3
-
-    local titleLbl = createLabel("King Akbarion", 70, IsMobile and 38 or 50)
-    local titleGrad = Instance.new("UIGradient", titleLbl)
-    titleGrad.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0,   Color3.fromHex("#ffffff")),
-        ColorSequenceKeypoint.new(0.5, Color3.fromHex("#aaaaaa")),
-        ColorSequenceKeypoint.new(1,   Color3.fromHex("#555555")),
-    })
-    titleGrad.Rotation = 45
-
-    local statLbl = createLabel("Memuat DDS Free Script...", 200, 12)
-    statLbl.Font             = Enum.Font.Gotham
-    statLbl.TextColor3       = Color3.fromHex("#555555")
-    statLbl.TextXAlignment   = Enum.TextXAlignment.Left
-    statLbl.Position         = UDim2.fromOffset(50, 200)
-
-    local line = Instance.new("Frame", container)
-    line.Size             = UDim2.fromOffset(0, 2)
-    line.Position         = UDim2.fromOffset(250, 152)
-    line.AnchorPoint      = Vector2.new(0.5, 0)
-    line.BackgroundColor3 = Color3.fromHex("#444444")
-    line.BorderSizePixel  = 0
-    line.ZIndex           = 3
-
-    local barBg = Instance.new("Frame", container)
-    barBg.Size                   = UDim2.fromOffset(400, 5)
-    barBg.Position               = UDim2.fromOffset(50, 190)
-    barBg.BackgroundColor3       = Color3.fromHex("#222222")
-    barBg.BackgroundTransparency = 1
-    barBg.BorderSizePixel        = 0
-    barBg.ZIndex                 = 3
-    Instance.new("UICorner", barBg).CornerRadius = UDim.new(1, 0)
-
-    local bar = Instance.new("Frame", barBg)
-    bar.Size             = UDim2.fromOffset(0, 5)
-    bar.BackgroundColor3 = Color3.fromHex("#ffffff")
-    bar.BorderSizePixel  = 0
-    bar.ZIndex           = 4
-    Instance.new("UICorner", bar).CornerRadius = UDim.new(1, 0)
-
-    local function tween(obj, props, t)
-        Services.TweenService:Create(obj, TweenInfo.new(t, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), props):Play()
-    end
-
-    local loadSteps = {
-        { "Fixing Serve Bug...",           0.30 },
-        { "Menyiapkan AI Barista...",      0.60 },
-        { "Welcome, Akbarion!",            1.00 },
-    }
-
-    task.spawn(function()
-        tween(iconImg,  { ImageTransparency = 0 }, 0.5)
-        task.wait(0.15)
-        tween(titleLbl, { TextTransparency = 0 }, 0.6)
-        task.wait(0.35)
-        tween(line,     { Size = UDim2.fromOffset(400, 2) }, 0.7)
-        task.wait(0.4)
-        tween(barBg,    { BackgroundTransparency = 0 }, 0.3)
-        tween(statLbl,  { TextTransparency = 0 }, 0.3)
-
-        for _, step in ipairs(loadSteps) do
-            statLbl.Text = step[1]
-            tween(bar, { Size = UDim2.fromOffset(400 * step[2], 5) }, 0.5)
-            task.wait(0.55)
-        end
-
-        task.wait(0.3)
-        tween(bg,       { BackgroundTransparency = 1 }, 0.6)
-        tween(iconImg,  { ImageTransparency = 1 }, 0.4)
-        tween(titleLbl, { TextTransparency = 1 }, 0.4)
-        tween(line,     { BackgroundTransparency = 1 }, 0.4)
-        tween(barBg,    { BackgroundTransparency = 1 }, 0.4)
-        tween(bar,      { BackgroundTransparency = 1 }, 0.4)
-        tween(statLbl,  { TextTransparency = 1 }, 0.4)
-        task.wait(0.8)
-        splashGui:Destroy()
-    end)
-    task.wait(3)
-end
-
--- ============================================================================
--- // 4. CONSTANTS & WAYPOINTS
--- ============================================================================
-local Constants = {
-    START_SHIFT  = Vector3.new(-4991.23, 4.29, -715.26),
-    COLOR_ORANGE = Color3.fromRGB(230, 150, 30),
-    COLOR_GREEN  = Color3.fromRGB(30, 180, 60),
-}
-
-local Paths = {
-    START_TO_MACHINE = {
-        Vector3.new(-4991.23, 4.29, -715.26),
-        Vector3.new(-5004.86, 4.29, -718.90),
-        Vector3.new(-5006.28, 4.29, -802.11),
-        Vector3.new(-4994.18, 4.29, -801.66),
-        Vector3.new(-4994.62, 4.29, -794.89),
-        Vector3.new(-4997.13, 4.29, -794.57),
-        Vector3.new(-4998.16, 4.29, -794.80),
-    },
-    MACHINE_TO_CASHIER = {
-        Vector3.new(-4997.13, 4.29, -794.57),
-        Vector3.new(-4994.62, 4.29, -794.89),
-        Vector3.new(-4995.56, 4.29, -759.78),
-    },
-    CASHIER_TO_MACHINE = {
-        Vector3.new(-4994.62, 4.29, -794.89),
-        Vector3.new(-4997.13, 4.29, -794.57),
-        Vector3.new(-4998.16, 4.29, -794.80),
-    },
-    MACHINE_TO_START = {
-        Vector3.new(-4998.16, 4.29, -794.80),
-        Vector3.new(-4997.13, 4.29, -794.57),
-        Vector3.new(-4994.62, 4.29, -794.89),
-        Vector3.new(-4994.18, 4.29, -801.66),
-        Vector3.new(-5006.28, 4.29, -802.11),
-        Vector3.new(-5004.86, 4.29, -718.90),
-        Vector3.new(-4991.23, 4.29, -715.26),
-    },
-    CASHIER_TO_START = {
-        Vector3.new(-4995.56, 4.29, -759.78),
-        Vector3.new(-4994.62, 4.29, -794.89),
-        Vector3.new(-4994.18, 4.29, -801.66),
-        Vector3.new(-5006.28, 4.29, -802.11),
-        Vector3.new(-5004.86, 4.29, -718.90),
-        Vector3.new(-4991.23, 4.29, -715.26),
-    },
-    MACHINE_TO_FIX = {
-        Vector3.new(-4998.14, 4.29, -795.38),
-        Vector3.new(-4997.02, 4.29, -802.18),
-        Vector3.new(-5006.31, 4.29, -802.30),
-        Vector3.new(-5003.75, 4.29, -711.60),
-        Vector3.new(-5004.43, 3.19, -670.40),
-        Vector3.new(-5114.86, 3.19, -670.41),
-    },
-    FIX_TO_MACHINE = {
-        Vector3.new(-5114.86, 3.19, -670.41),
-        Vector3.new(-5004.43, 3.19, -670.40),
-        Vector3.new(-5003.75, 4.29, -711.60),
-        Vector3.new(-5006.31, 4.29, -802.30),
-        Vector3.new(-4997.02, 4.29, -802.18),
-        Vector3.new(-4998.14, 4.29, -795.38),
-    }
-}
-
--- ============================================================================
--- // 5. MONEY TRACKER & DDS WEBHOOK
+-- // 3. WEBHOOK SYSTEM (MONITORING & PANIC ALERT)
 -- ============================================================================
 local function GetPlayerMoney()
     local money = 0
@@ -375,6 +163,36 @@ local function SendDiscordReport()
     end)
 end
 
+-- PANIC ALERT SENSOR (ALARM DARURAT)
+local function SendPanicAlert(reason)
+    if not State.WebhookEnabled or State.WebhookURL == "" or State.WebhookURL == "Paste Link Disini" then return end
+    
+    pcall(function()
+        local request = (syn and syn.request) or (http and http.request) or http_request or request
+        if request then
+            local pName = LocalPlayer.Name
+            local safeName = string.sub(pName, 1, 4) .. "...."
+            local timeStr = os.date("%H:%M:%S")
+            
+            local data = {
+                ["embeds"] = {{
+                    ["title"] = "🚨 ALARM DARURAT - KING AKBARION",
+                    ["description"] = "👤 **Akun:** " .. safeName .. "\n\n⚠️ **Status Bahaya:**\n`" .. reason .. "`",
+                    ["color"] = 16711680, -- Warna Merah Darurat
+                    ["footer"] = {["text"] = "Sistem Keamanan Aktif • Time: " .. timeStr}
+                }}
+            }
+            
+            request({
+                Url = State.WebhookURL,
+                Method = "POST",
+                Headers = {["Content-Type"] = "application/json"},
+                Body = Services.HttpService:JSONEncode(data)
+            })
+        end
+    end)
+end
+
 -- Timer Webhook berkala
 task.spawn(function()
     while true do
@@ -389,9 +207,234 @@ task.spawn(function()
     end
 end)
 
+-- ============================================================================
+-- // 4. ALARM TRIGGERS (ADMIN & ERROR SENSOR)
+-- ============================================================================
+local GAME_GROUP_ID = 11378976
+local MIN_STAFF_RANK = 200
+
+local function CheckForAdmin(player)
+    if not State.AntiAdmin then return end
+    if player == LocalPlayer then return end
+    pcall(function()
+        local playerRank = player:GetRankInGroup(GAME_GROUP_ID)
+        if playerRank >= MIN_STAFF_RANK then
+            -- Kirim Alarm ke Discord sebelum Kick
+            SendPanicAlert("Admin [" .. player.Name .. "] masuk server! Auto-Kick berjalan.")
+            task.wait(1)
+            LocalPlayer:Kick("🚨 KABUR BRAY! Admin terdeteksi masuk server.")
+        end
+    end)
+end
+
+for _, player in ipairs(Services.Players:GetPlayers()) do CheckForAdmin(player) end
+Services.Players.PlayerAdded:Connect(CheckForAdmin)
+
+-- Deteksi Error Game (Roblox Disconnect / Internet Mati)
+Services.GuiService.ErrorMessageChanged:Connect(function(errMsg)
+    if errMsg and errMsg ~= "" and State.WebhookEnabled then
+        SendPanicAlert("Koneksi terputus / Error Game!\nPesan: " .. errMsg)
+    end
+end)
 
 -- ============================================================================
--- // 6. UTILITY METHODS (LIVE SCAN + UI SENSOR)
+-- // 5. SPLASH SCREEN (KING AKBARION - DEFAULT THEME)
+-- ============================================================================
+do
+    local splashGui = Instance.new("ScreenGui")
+    splashGui.Name           = "BaristaSplash"
+    splashGui.ResetOnSpawn   = false
+    splashGui.IgnoreGuiInset = true
+    splashGui.DisplayOrder   = 999
+    splashGui.Parent         = LocalPlayer:WaitForChild("PlayerGui")
+
+    local bg = Instance.new("Frame", splashGui)
+    bg.Size             = UDim2.fromScale(1, 1)
+    bg.BackgroundColor3 = Color3.fromHex("#0a0a0a")
+    bg.BorderSizePixel  = 0
+    bg.ZIndex           = 1
+
+    local uiGrad = Instance.new("UIGradient", bg)
+    uiGrad.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, Color3.fromHex("#0a0a0a")),
+        ColorSequenceKeypoint.new(1, Color3.fromHex("#1e1e1e")),
+    })
+    uiGrad.Rotation = 135
+
+    local container = Instance.new("Frame", bg)
+    container.Size               = UDim2.fromOffset(500, 300)
+    container.Position           = UDim2.fromScale(0.5, 0.5)
+    container.AnchorPoint        = Vector2.new(0.5, 0.5)
+    container.BackgroundTransparency = 1
+    container.ZIndex             = 2
+
+    local function createLabel(text, yOff, size)
+        local lbl = Instance.new("TextLabel", container)
+        lbl.Size                = UDim2.fromOffset(500, 70)
+        lbl.Position            = UDim2.fromOffset(0, yOff)
+        lbl.BackgroundTransparency = 1
+        lbl.Text                = text
+        lbl.TextSize            = size
+        lbl.Font                = Enum.Font.GothamBold
+        lbl.TextColor3          = Color3.fromHex("#ffffff")
+        lbl.TextTransparency    = 1
+        lbl.ZIndex              = 3
+        return lbl
+    end
+
+    local iconImg = Instance.new("ImageLabel", container)
+    iconImg.Size = UDim2.fromOffset(120, 120) 
+    iconImg.Position = UDim2.fromOffset(190, -40) 
+    iconImg.BackgroundTransparency = 1
+    iconImg.Image = "rbxassetid://91115084979317" 
+    iconImg.ImageTransparency = 1
+    iconImg.ZIndex = 3
+
+    local titleLbl = createLabel("King Akbarion", 70, IsMobile and 38 or 50)
+    local titleGrad = Instance.new("UIGradient", titleLbl)
+    titleGrad.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0,   Color3.fromHex("#ffffff")),
+        ColorSequenceKeypoint.new(0.5, Color3.fromHex("#aaaaaa")),
+        ColorSequenceKeypoint.new(1,   Color3.fromHex("#555555")),
+    })
+    titleGrad.Rotation = 45
+
+    local statLbl = createLabel("Memuat Modul Anti-Lag...", 200, 12)
+    statLbl.Font             = Enum.Font.Gotham
+    statLbl.TextColor3       = Color3.fromHex("#555555")
+    statLbl.TextXAlignment   = Enum.TextXAlignment.Left
+    statLbl.Position         = UDim2.fromOffset(50, 200)
+
+    local line = Instance.new("Frame", container)
+    line.Size             = UDim2.fromOffset(0, 2)
+    line.Position         = UDim2.fromOffset(250, 152)
+    line.AnchorPoint      = Vector2.new(0.5, 0)
+    line.BackgroundColor3 = Color3.fromHex("#444444")
+    line.BorderSizePixel  = 0
+    line.ZIndex           = 3
+
+    local barBg = Instance.new("Frame", container)
+    barBg.Size                   = UDim2.fromOffset(400, 5)
+    barBg.Position               = UDim2.fromOffset(50, 190)
+    barBg.BackgroundColor3       = Color3.fromHex("#222222")
+    barBg.BackgroundTransparency = 1
+    barBg.BorderSizePixel        = 0
+    barBg.ZIndex                 = 3
+    Instance.new("UICorner", barBg).CornerRadius = UDim.new(1, 0)
+
+    local bar = Instance.new("Frame", barBg)
+    bar.Size             = UDim2.fromOffset(0, 5)
+    bar.BackgroundColor3 = Color3.fromHex("#ffffff")
+    bar.BorderSizePixel  = 0
+    bar.ZIndex           = 4
+    Instance.new("UICorner", bar).CornerRadius = UDim.new(1, 0)
+
+    local function tween(obj, props, t)
+        Services.TweenService:Create(obj, TweenInfo.new(t, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), props):Play()
+    end
+
+    local loadSteps = {
+        { "Menyiapkan FPS Boost...",       0.30 },
+        { "Mengaktifkan Alarm Darurat...", 0.60 },
+        { "Welcome, Akbarion!",            1.00 },
+    }
+
+    task.spawn(function()
+        tween(iconImg,  { ImageTransparency = 0 }, 0.5)
+        task.wait(0.15)
+        tween(titleLbl, { TextTransparency = 0 }, 0.6)
+        task.wait(0.35)
+        tween(line,     { Size = UDim2.fromOffset(400, 2) }, 0.7)
+        task.wait(0.4)
+        tween(barBg,    { BackgroundTransparency = 0 }, 0.3)
+        tween(statLbl,  { TextTransparency = 0 }, 0.3)
+
+        for _, step in ipairs(loadSteps) do
+            statLbl.Text = step[1]
+            tween(bar, { Size = UDim2.fromOffset(400 * step[2], 5) }, 0.5)
+            task.wait(0.55)
+        end
+
+        task.wait(0.3)
+        tween(bg,       { BackgroundTransparency = 1 }, 0.6)
+        tween(iconImg,  { ImageTransparency = 1 }, 0.4)
+        tween(titleLbl, { TextTransparency = 1 }, 0.4)
+        tween(line,     { BackgroundTransparency = 1 }, 0.4)
+        tween(barBg,    { BackgroundTransparency = 1 }, 0.4)
+        tween(bar,      { BackgroundTransparency = 1 }, 0.4)
+        tween(statLbl,  { TextTransparency = 1 }, 0.4)
+        task.wait(0.8)
+        splashGui:Destroy()
+    end)
+    task.wait(3)
+end
+
+-- ============================================================================
+-- // 6. CONSTANTS & WAYPOINTS
+-- ============================================================================
+local Constants = {
+    START_SHIFT  = Vector3.new(-4991.23, 4.29, -715.26),
+    COLOR_ORANGE = Color3.fromRGB(230, 150, 30),
+    COLOR_GREEN  = Color3.fromRGB(30, 180, 60),
+}
+
+local Paths = {
+    START_TO_MACHINE = {
+        Vector3.new(-4991.23, 4.29, -715.26),
+        Vector3.new(-5004.86, 4.29, -718.90),
+        Vector3.new(-5006.28, 4.29, -802.11),
+        Vector3.new(-4994.18, 4.29, -801.66),
+        Vector3.new(-4994.62, 4.29, -794.89),
+        Vector3.new(-4997.13, 4.29, -794.57),
+        Vector3.new(-4998.16, 4.29, -794.80),
+    },
+    MACHINE_TO_CASHIER = {
+        Vector3.new(-4997.13, 4.29, -794.57),
+        Vector3.new(-4994.62, 4.29, -794.89),
+        Vector3.new(-4995.56, 4.29, -759.78),
+    },
+    CASHIER_TO_MACHINE = {
+        Vector3.new(-4994.62, 4.29, -794.89),
+        Vector3.new(-4997.13, 4.29, -794.57),
+        Vector3.new(-4998.16, 4.29, -794.80),
+    },
+    MACHINE_TO_START = {
+        Vector3.new(-4998.16, 4.29, -794.80),
+        Vector3.new(-4997.13, 4.29, -794.57),
+        Vector3.new(-4994.62, 4.29, -794.89),
+        Vector3.new(-4994.18, 4.29, -801.66),
+        Vector3.new(-5006.28, 4.29, -802.11),
+        Vector3.new(-5004.86, 4.29, -718.90),
+        Vector3.new(-4991.23, 4.29, -715.26),
+    },
+    CASHIER_TO_START = {
+        Vector3.new(-4995.56, 4.29, -759.78),
+        Vector3.new(-4994.62, 4.29, -794.89),
+        Vector3.new(-4994.18, 4.29, -801.66),
+        Vector3.new(-5006.28, 4.29, -802.11),
+        Vector3.new(-5004.86, 4.29, -718.90),
+        Vector3.new(-4991.23, 4.29, -715.26),
+    },
+    MACHINE_TO_FIX = {
+        Vector3.new(-4998.14, 4.29, -795.38),
+        Vector3.new(-4997.02, 4.29, -802.18),
+        Vector3.new(-5006.31, 4.29, -802.30),
+        Vector3.new(-5003.75, 4.29, -711.60),
+        Vector3.new(-5004.43, 3.19, -670.40),
+        Vector3.new(-5114.86, 3.19, -670.41),
+    },
+    FIX_TO_MACHINE = {
+        Vector3.new(-5114.86, 3.19, -670.41),
+        Vector3.new(-5004.43, 3.19, -670.40),
+        Vector3.new(-5003.75, 4.29, -711.60),
+        Vector3.new(-5006.31, 4.29, -802.30),
+        Vector3.new(-4997.02, 4.29, -802.18),
+        Vector3.new(-4998.14, 4.29, -795.38),
+    }
+}
+
+-- ============================================================================
+-- // 7. UTILITY METHODS (LIVE SCAN + UI SENSOR)
 -- ============================================================================
 local function WalkToPoint(targetPos)
     if not CharRef.Character or not CharRef.Humanoid or not CharRef.Root then return end
@@ -461,9 +504,6 @@ local function DoTap(prompt)
     return true
 end
 
--- ============================================================================
--- // SENSOR DEWA: CEK MESIN RUSAK LANGSUNG DARI TULISAN LAYAR
--- ============================================================================
 local function IsMachineBroken()
     for _, gui in pairs(LocalPlayer.PlayerGui:GetChildren()) do
         for _, v in pairs(gui:GetDescendants()) do
@@ -517,7 +557,69 @@ local function FindByColor(parent, targetColor, tolerance)
 end
 
 -- ============================================================================
--- // 7. AI MINIGAME (3-LAYER SMART SENSOR)
+-- // 8. ANTI-LAG & BATTERY SAVER LOGIC
+-- ============================================================================
+local function OptimizeFPS()
+    local Lighting = game:GetService("Lighting")
+    local Terrain = workspace:FindFirstChildOfClass("Terrain")
+    
+    Lighting.GlobalShadows = false
+    Lighting.FogEnd = 9e9
+    Lighting.ShadowSoftness = 0
+    
+    if Terrain then
+        Terrain.WaterWaveSize = 0
+        Terrain.WaterWaveSpeed = 0
+        Terrain.WaterReflectance = 0
+        Terrain.WaterTransparency = 0
+    end
+    
+    for _, v in pairs(game:GetDescendants()) do
+        if v:IsA("BasePart") then
+            v.Material = Enum.Material.SmoothPlastic
+            v.Reflectance = 0
+        elseif v:IsA("Decal") or v:IsA("Texture") then
+            v.Transparency = 1
+        elseif v:IsA("ParticleEmitter") or v:IsA("Trail") then
+            v.Lifetime = NumberRange.new(0)
+        elseif v:IsA("PostEffect") then
+            v.Enabled = false
+        end
+    end
+end
+
+local BlackScreenGui
+local function ToggleBlackScreen(state)
+    pcall(function() Services.RunService:Set3dRenderingEnabled(not state) end)
+    
+    if state then
+        if not BlackScreenGui then
+            BlackScreenGui = Instance.new("ScreenGui")
+            BlackScreenGui.Name = "BlackScreenSaver"
+            BlackScreenGui.IgnoreGuiInset = true
+            BlackScreenGui.DisplayOrder = 9999
+            BlackScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
+            
+            local bg = Instance.new("Frame", BlackScreenGui)
+            bg.Size = UDim2.fromScale(1, 1)
+            bg.BackgroundColor3 = Color3.new(0, 0, 0)
+            
+            local txt = Instance.new("TextLabel", bg)
+            txt.Text = "🌑 MODE HEMAT BATERAI AKTIF 🌑\nKing Akbarion Sedang Mencari Cuan..."
+            txt.Size = UDim2.fromScale(1, 1)
+            txt.TextColor3 = Color3.new(1, 1, 1)
+            txt.BackgroundTransparency = 1
+            txt.Font = Enum.Font.GothamBold
+            txt.TextSize = 20
+        end
+        BlackScreenGui.Enabled = true
+    else
+        if BlackScreenGui then BlackScreenGui.Enabled = false end
+    end
+end
+
+-- ============================================================================
+-- // 9. AI MINIGAME (3-LAYER SMART SENSOR)
 -- ============================================================================
 local function StartMinigameAI()
     if State.AiThread then task.cancel(State.AiThread) end
@@ -589,7 +691,7 @@ local function StartMinigameAI()
 end
 
 -- ============================================================================
--- // 8. MAIN FARMING LOOP (RESTRUCTURED & FIXED SERVE BUG)
+-- // 10. MAIN FARMING LOOP (FIXED SERVE BUG)
 -- ============================================================================
 local function TakeJob()
     State.StatusText = "🏃 Otw ambil job barusan..."
@@ -733,9 +835,6 @@ local function FarmLoop()
                 task.wait(0.5) -- Tunggu sebentar ngecek apa kopinya beneran udah lenyap
             end
 
-            -- ==========================================
-            -- PASTIKAN KOPI SUDAH HILANG DARI TANGAN SEBELUM NYATET PROFIT
-            -- ==========================================
             if not CharRef.Character:FindFirstChildOfClass("Tool") then
                 State.OrderCount += 1
                 State.StatusText = "✅ Mantap! Kopi laku: " .. State.OrderCount
@@ -768,7 +867,7 @@ local function StopScript()
 end
 
 -- ============================================================================
--- // 9. UI CONSTRUCTION
+-- // 11. UI CONSTRUCTION
 -- ============================================================================
 local windowSize = IsMobile and UDim2.fromOffset(420, 320) or UDim2.fromOffset(580, 460)
 local minSize    = IsMobile and Vector2.new(600, 300) or Vector2.new(600, 350)
@@ -815,13 +914,18 @@ TabBarista:Toggle({
 
 -- TAB WEBHOOK
 local TabWeb = Window:Tab({ Title = "Webhook", Icon = "bell", Border = true })
-TabWeb:Toggle({ Title = "Nyalain Webhook", Callback = function(s) State.WebhookEnabled = s end })
+TabWeb:Toggle({ Title = "Nyalain Webhook (Laporan & Alarm)", Callback = function(s) State.WebhookEnabled = s end })
 TabWeb:Input({ Title = "Link Webhook Discord", Placeholder = "Paste Link Disini", Callback = function(v) State.WebhookURL = v end })
 TabWeb:Slider({ Title = "Jeda Laporan (Menit)", Value = {Min = 1, Max = 60, Default = 10}, Callback = function(v) State.WebhookInterval = v end })
-TabWeb:Button({ Title = "Test Kirim Laporan", Callback = function() 
+TabWeb:Section({ Title = "Test Fitur Webhook" })
+TabWeb:Button({ Title = "Test Laporan Cuan", Callback = function() 
     if State.UangAwal == 0 then State.UangAwal = GetPlayerMoney() end
     State.WebhookEnabled = true; SendDiscordReport()
-    WindUI:Notify({Title = "Berhasil!", Content = "Cek laporan di Discord bosku!"}) 
+    WindUI:Notify({Title = "Berhasil!", Content = "Cek laporan kuning di Discord bosku!"}) 
+end})
+TabWeb:Button({ Title = "Test Alarm Darurat", Callback = function() 
+    State.WebhookEnabled = true; SendPanicAlert("INI CUMA TEST ALARM BOSKU! 🚨")
+    WindUI:Notify({Title = "Berhasil!", Content = "Alarm merah masuk ke Discord!"}) 
 end})
 
 TabBarista:Section({ Title = "🚀 Tombol Darurat" })
@@ -829,9 +933,15 @@ TabBarista:Button({ Title = "Ambil Job Manual", Callback = function() task.spawn
 TabBarista:Button({ Title = "Jalan ke Mesin Kopi", Callback = function() FollowPath(Paths.START_TO_MACHINE) end })
 TabBarista:Button({ Title = "Jalan ke Kasir", Callback = function() FollowPath(Paths.MACHINE_TO_CASHIER) end })
 
-local TabSecurity = Window:Tab({ Title = "Keamanan", Icon = "shield", Border = true })
-TabSecurity:Toggle({ Title = "Anti-AFK Bypass", Icon = "clock", Value = true, Callback = function(state) State.AntiAFK = state end })
-TabSecurity:Toggle({ Title = "Radar Anti-Admin", Icon = "user-minus", Value = true, Callback = function(state) State.AntiAdmin = state end })
+local TabSec = Window:Tab({ Title = "Keamanan & Performa", Icon = "shield", Border = true })
+TabSec:Section({ Title = "Radar Anti-Banned" })
+TabSec:Toggle({ Title = "Anti-AFK Bypass", Icon = "clock", Value = true, Callback = function(state) State.AntiAFK = state end })
+TabSec:Toggle({ Title = "Radar Anti-Admin", Icon = "user-minus", Value = true, Callback = function(state) State.AntiAdmin = state end })
+TabSec:Paragraph({ Title = "Info Darurat", Desc = "Alarm otomatis terkirim jika terdeteksi Admin atau Koneksi Putus." })
+
+TabSec:Section({ Title = "⚡ Mode Performa (Anti-Lag)" })
+TabSec:Button({ Title = "Aktifkan Mode Kentang (FPS Boost)", Desc = "Hapus semua tekstur dan bayangan biar enteng", Callback = function() WindUI:Notify({Title = "Anti-Lag Aktif", Content = "Lagi nyapu tekstur, awas ngelag dikit..."}); task.spawn(OptimizeFPS) end })
+TabSec:Toggle({ Title = "Mode Layar Hitam (Hemat Baterai)", Desc = "Mematikan grafik 3D biar HP/PC gak panas pas AFK", Value = false, Callback = function(state) ToggleBlackScreen(state) end })
 
 local TabSettings = Window:Tab({ Title = "Pengaturan", Icon = "settings", Border = true })
 TabSettings:Slider({ Title = "Jeda Santai (Detik)", Step = 1, Value = { Min = 1, Max = 10, Default = 2 }, Callback = function(v) State.ActionDelay = v end })
@@ -853,4 +963,4 @@ end)
 Window:SetIconSize(47)
 WindUI:SetTheme("dark")
 TabBarista:Select()
-WindUI:Notify({ Title = "👑 KING AKBARION READY!", Content = "Base V4.1 sukses digabung sama Webhook DDS Free!", Duration = 5 })
+WindUI:Notify({ Title = "👑 KING AKBARION V4.8 READY!", Content = "Anti-Lag & Hemat Baterai udah siap disiksa bray!", Duration = 5 })
